@@ -1,12 +1,10 @@
 import { useState } from "react";
 
 import { format } from "prettier";
-import parserBabel from "prettier/parser-babel";
+// import parserBabel from "prettier/parser-babel";
 
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-
-  
 
 export default function Form() {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -19,10 +17,10 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
 `;
 
   // FIXME - Conseguir manera de formatear con prettier
-  const formattedCodeString = format(codeString, {
-    parser: "babel",
-    plugins: [parserBabel],
-  });
+  // const formattedCodeString = format(codeString, {
+  //   parser: "babel",
+  //   plugins: [parserBabel],
+  // });
 
   const checkAnswer = () => {
     if (selectedAnswer === "D") {

@@ -1,5 +1,5 @@
-import Form from './components/Form.jsx'
-import Navbar from './components/Navbar.jsx'
+import Form from "./components/Form";
+import Navbar from "./components/Navbar";
 
 function App() {
   return (
