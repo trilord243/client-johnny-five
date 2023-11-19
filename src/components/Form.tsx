@@ -5,9 +5,13 @@ import { format } from "prettier";
 
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
+import useQuestions from "../hooks/useQuestions";
+import FeedBackMessage from "./FeedBackMessage";
 
 export default function Form() {
-  const [selectedAnswer, setSelectedAnswer] = useState(null);
+  const { questions } = useQuestions();
+  const [selectedAnswer, setSelectedAnswer] = useState(0);
+  const [success, setSuccess] = useState(false);
   const [message, setMessage] = useState("");
 
   const codeString = `
@@ -22,19 +26,38 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   //   plugins: [parserBabel],
   // });
 
-  const checkAnswer = () => {
-    if (selectedAnswer === "D") {
+  // const checkAnswer = () => {
+  //   if (selectedAnswer === "D") {
+  //     setMessage("¡Respuesta correcta!");
+  //     fetch("http://localhost:3000/correcto");
+  //   } else {
+  //     setMessage("Respuesta incorrecta. Intenta de nuevo.");
+  //     fetch("http://localhost:3000/incorrecto");
+  //   }
+  // };
+
+  function checkAnswer(question: Question, answerIndex: number) {
+    if (answerIndex === question.correctAnswerIndex) {
+      setSuccess(true);
       setMessage("¡Respuesta correcta!");
       fetch("http://localhost:3000/correcto");
     } else {
+      setSuccess(false);
+
       setMessage("Respuesta incorrecta. Intenta de nuevo.");
       fetch("http://localhost:3000/incorrecto");
     }
-  };
+  }
 
-  return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-gray-900 w-full text-white px-4">
-      <div className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md">
+  function getAlphabetLetter(index: number) {
+    return String.fromCharCode(97 + index);
+  }
+
+  const questionsJSX = questions.map((question) => (
+    <div key={question.id}>
+      <h2 className="text-2xl font-bold mb-4 text-center">{question.title}</h2>
+      <p>{question.description}</p>
+      {question.code && (
         <SyntaxHighlighter
           language="javascript"
           style={{
@@ -51,68 +74,44 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
           }}
           showLineNumbers
         >
-          {`let arr = ['foo', 'bar', 'baz'];
-arr.length = 0; //hola
-arr.push('bin');
-
-console.log(arr);`}
+          {question.code}
         </SyntaxHighlighter>
+      )}
+      <fieldset className="my-4 space-y-4">
+        <legend className="sr-only">Respuestas</legend>
+        {question.answers.map((answer, index) => (
+          <label key={index} className="flex items-center">
+            <input
+              type="radio"
+              name="answer"
+              value={index}
+              className="mr-2"
+              onChange={() => setSelectedAnswer(index)}
+            />
+            {`${getAlphabetLetter(index)}) ${answer}`}
+          </label>
+        ))}
+      </fieldset>
 
-        <p className="font-bold mb-4">Que aparece por consola</p>
+      <button
+        onClick={() => checkAnswer(question, selectedAnswer)}
+        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+      >
+        Enviar respuesta
+      </button>
 
-        <fieldset className="mt-4 space-y-4">
-          <legend className="sr-only">Respuestas</legend>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="answer"
-              value="A"
-              className="mr-2"
-              onChange={() => setSelectedAnswer("A")}
-            />
-            a) ['foo', 'bar', 'baz']
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="answer"
-              value="B"
-              className="mr-2"
-              onChange={() => setSelectedAnswer("B")}
-            />
-            b) ['foo', 'bar', 'baz', 'bin']
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="answer"
-              value="C"
-              className="mr-2"
-              onChange={() => setSelectedAnswer("C")}
-            />
-            c) ['bin', 'foo', 'bar', 'baz']
-          </label>
-          <label className="flex items-center">
-            <input
-              type="radio"
-              name="answer"
-              value="D"
-              className="mr-2"
-              onChange={() => setSelectedAnswer("D")}
-            />
-            d) ['bin']
-          </label>
-        </fieldset>
-        <div className="mt-4">
-          <button
-            onClick={checkAnswer}
-            className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
-          >
-            Enviar respuesta
-          </button>
-        </div>
-        {message && <p className="mt-4 text-red-500">{message}</p>}
-      </div>
+      <FeedBackMessage message={message} correct={success} />
+      {/* {message && <p className="mt-4 text-red-500">{message}</p>} */}
+    </div>
+  ));
+
+  return (
+    <div className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md">
+      {questions.length === 0 ? (
+        <p className="text-white">Cargando...</p>
+      ) : (
+        questionsJSX
+      )}
     </div>
   );
 }
