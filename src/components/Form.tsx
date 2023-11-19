@@ -54,7 +54,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   }
 
   const questionsJSX = questions.map((question) => (
-    <div key={question.id}>
+    <section key={question.id} className="flex flex-col">
       <h2 className="text-2xl font-bold mb-4 text-center">{question.title}</h2>
       <p>{question.description}</p>
       {question.code && (
@@ -95,14 +95,16 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
 
       <button
         onClick={() => checkAnswer(question, selectedAnswer)}
-        className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+        className="bg-blue-500 hover:bg-blue-700 text-white 
+          font-bold py-2 px-4 rounded 
+          max-w-[10rem] self-center"
       >
         Enviar respuesta
       </button>
 
       <FeedBackMessage message={message} correct={success} />
       {/* {message && <p className="mt-4 text-red-500">{message}</p>} */}
-    </div>
+    </section>
   ));
 
   return (
