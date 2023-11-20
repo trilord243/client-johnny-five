@@ -13,7 +13,7 @@ export default function useQuestions() {
 
         description: "",
         code: `let arr = ['foo', 'bar', 'baz'];
-arr.length = 0; //hola
+arr.length = 0; 
 arr.push('bin');
         
 console.log(arr);`,
@@ -37,6 +37,14 @@ console.log(arr);`,
           "Funcional, Heredable, Legible y Reutilizable",
           "Herencia, Polimorfismo, Funcional y De tipado",
         ],
+        correctAnswerIndex: 0,
+        answerState: AnswerState.NOT_ANSWERED,
+      },
+      {
+        id: 3,
+        title: "Cuál de las siguientes complejidades Big O es más eficiente?",
+        description: "",
+        answers: ["O(n^2)", "O(n)", "O(log(n))", "O(n*log(n))"],
         correctAnswerIndex: 1,
         answerState: AnswerState.NOT_ANSWERED,
       },
