@@ -1,7 +1,7 @@
 import { useState } from 'react'
 import { Dialog } from '@headlessui/react'
 import { Bars3Icon, XMarkIcon } from '@heroicons/react/24/outline'
-import imagen from "../assets/Icono-MT.png"
+import Logo from "../assets/Icono-MT.png"
 
 
 
@@ -79,7 +79,7 @@ export default function Navbar() {
 
                 <a href="#" className="-m-1.5 p-1.5">
                     <span className="sr-only">Metrotech</span>
-                    <img className="h-8 w-auto" src={imagen} alt="" />
+                    <img className="h-14 w-auto max-md:pr-4" src={Logo} alt="" />
                 </a>
                 <div className="flex flex-1 justify-end">
                     <a onClick={relay} href="#" className="text-sm font-semibold leading-6 text-gray-900">
@@ -106,7 +106,7 @@ export default function Navbar() {
                             <span className="sr-only">Metrotech</span>
                             <img
                                 className="h-8 w-auto"
-                                src={imagen}
+                                src={Logo}
                                 alt="a"
                             />
                         </a>
