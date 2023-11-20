@@ -6,12 +6,12 @@ import { format } from "prettier";
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import useQuestions from "../hooks/useQuestions";
-import FeedBackMessage from "./FeedBackMessage";
+import FeedBackMessage, { AnswerState } from "./FeedBackMessage";
 
 export default function Form() {
   const { questions } = useQuestions();
   const [selectedAnswer, setSelectedAnswer] = useState(0);
-  const [success, setSuccess] = useState(false);
+  const [answerState, setAnswerState] = useState<AnswerState>(AnswerState.NOT_ANSWERED);
   const [message, setMessage] = useState("");
 
   const codeString = `
@@ -38,11 +38,11 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
 
   function checkAnswer(question: Question, answerIndex: number) {
     if (answerIndex === question.correctAnswerIndex) {
-      setSuccess(true);
+      setAnswerState(AnswerState.CORRECT);
       setMessage("¡Respuesta correcta!");
       fetch("http://localhost:3000/correcto");
     } else {
-      setSuccess(false);
+      setAnswerState(AnswerState.INCORRECT);
 
       setMessage("Respuesta incorrecta. Intenta de nuevo.");
       fetch("http://localhost:3000/incorrecto");
@@ -102,18 +102,27 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         Enviar respuesta
       </button>
 
-      <FeedBackMessage message={message} correct={success} />
+      <FeedBackMessage message={message} correct={answerState} />
       {/* {message && <p className="mt-4 text-red-500">{message}</p>} */}
     </section>
   ));
 
   return (
-    <div className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md">
-      {questions.length === 0 ? (
-        <p className="text-white">Cargando...</p>
-      ) : (
-        questionsJSX
-      )}
+    <div
+      id="gradient-wrapper"
+      className={`bg-gradient-to-tr rounded-lg p-1 ${
+        answerState == AnswerState.CORRECT
+          ? "from-green-400 to-blue-500"
+          : "from-red-500 to-orange-500"
+      }`}
+    >
+      <div className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md">
+        {questions.length === 0 ? (
+          <p className="text-white">Cargando...</p>
+        ) : (
+          questionsJSX
+        )}
+      </div>
     </div>
   );
 }
