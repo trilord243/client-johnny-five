@@ -5,10 +5,10 @@ import { format } from "prettier";
 
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
-import useQuestions from "../hooks/useQuestions";
+import useQuestions from "../../hooks/useQuestions";
 import FeedBackMessage, { AnswerState } from "./FeedBackMessage";
 
-import Arrow from "../assets/icons/arrow.svg";
+import Arrow from "../../assets/icons/arrow.svg";
 
 export default function Form() {
   const { questions } = useQuestions();

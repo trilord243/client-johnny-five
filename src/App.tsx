@@ -1,4 +1,4 @@
-import Form from "./components/Form";
+import Form from "./components/Questions/Form";
 import Navbar from "./components/Navbar";
 
 function App() {
