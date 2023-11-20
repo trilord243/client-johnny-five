@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { Question } from "../models/Question";
+import { AnswerState } from "../components/Questions/FeedBackMessage";
 
 export default function useQuestions() {
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -19,9 +21,10 @@ console.log(arr);`,
           "['foo', 'bar', 'baz']",
           "['foo', 'bar', 'baz', 'bin']",
           "['bin', 'foo', 'bar', 'baz']",
-          "['bin']", //correcta
+          "['bin']",
         ],
         correctAnswerIndex: 3,
+        answerState: AnswerState.NOT_ANSWERED,
       },
       {
         id: 2,
@@ -32,9 +35,10 @@ console.log(arr);`,
           "Abstracción, Encapsulamiento, Herencia y Polimorfismo",
           "Abstracción, Funcionalidad, Encapsulamiento y Legible",
           "Funcional, Heredable, Legible y Reutilizable",
-          "Herencia, Polimorfismo, Funcional y De tipado"
+          "Herencia, Polimorfismo, Funcional y De tipado",
         ],
         correctAnswerIndex: 1,
+        answerState: AnswerState.NOT_ANSWERED,
       },
     ]);
   }, []);
