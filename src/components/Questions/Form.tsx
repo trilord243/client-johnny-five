@@ -58,9 +58,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
     } finally {
       setTimeout(() => {
         setMessage("");
-        // setAnswerState(AnswerState.NOT_ANSWERED);
         // setCurrentQuestion((prev) => prev + 1);
-        console.log("hola");
       }, 2000);
     }
   }
@@ -76,7 +74,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         transform: `translateX(${(question.id - 1 - currentQuestion) * 120}%)`,
         transition: "transform 0.3s ease-in-out",
       }}
-      className="flex flex-col absolute h-full w-[90%] mt-6"
+      className="flex flex-col absolute h-full w-[90%] mt-10"
     >
       <h2 className="text-2xl font-bold mb-4 text-center">{question.title}</h2>
       <p>{question.description}</p>
@@ -118,18 +116,17 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         ))}
       </fieldset>
 
+      <FeedBackMessage message={message} correct={question.answerState} />
       <button
         onClick={() => checkAnswer(question, selectedAnswer)}
         className="bg-blue-500 hover:bg-blue-700 text-white 
           font-bold py-2 px-4 rounded 
-          max-w-[10rem] self-center"
+          max-w-[10rem] self-center mt-auto mb-8"
       >
         Enviar respuesta
       </button>
 
-      <FeedBackMessage message={message} correct={question.answerState} />
-
-      <footer className="mt-auto mb-20 flex flex-row justify-evenly">
+      <footer className="\ mb-20 flex flex-row justify-evenly">
         <button
           className="rounded-full border-gray-600 border-2 
           h-14 w-14 text-white relative
@@ -164,9 +161,9 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
       id="gradient-wrapper"
       className={`bg-gradient-to-tr rounded-lg p-1 w-full max-w-[36rem]
         flex justify-center ${
-        questions[currentQuestion]?.answerState == AnswerState.CORRECT &&
-        "from-green-400 to-blue-500"
-      }
+          questions[currentQuestion]?.answerState == AnswerState.CORRECT &&
+          "from-green-400 to-blue-500"
+        }
       ${
         questions[currentQuestion]?.answerState == AnswerState.INCORRECT &&
         "from-red-500 to-orange-500"
@@ -178,7 +175,13 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         relative overflow-hidden min-h-[40rem]
         flex flex-col items-center"
       >
-        <QuestionCounter />
+        <QuestionCounter
+          questions={questions}
+          questionSetter={(index: number) => {
+            setCurrentQuestion(index);
+            console.log("hola");
+          }}
+        />
         {questions.length === 0 ? (
           <p className="text-white">Cargando...</p>
         ) : (
