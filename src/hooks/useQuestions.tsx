@@ -23,6 +23,19 @@ console.log(arr);`,
         ],
         correctAnswerIndex: 3,
       },
+      {
+        id: 2,
+        title:
+          "¿Cuáles son los 4 pilares de la Programación Orientada a Objetos (POO?)",
+        description: "",
+        answers: [
+          "Abstracción, Encapsulamiento, Herencia y Polimorfismo",
+          "Abstracción, Funcionalidad, Encapsulamiento y Legible",
+          "Funcional, Heredable, Legible y Reutilizable",
+          "Herencia, Polimorfismo, Funcional y De tipado"
+        ],
+        correctAnswerIndex: 1,
+      },
     ]);
   }, []);
 
