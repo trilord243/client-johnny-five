@@ -9,13 +9,13 @@ import useQuestions from "../../hooks/useQuestions";
 import FeedBackMessage, { AnswerState } from "./FeedBackMessage";
 
 import Arrow from "../../assets/icons/arrow.svg";
+import QuestionCounter from "./QuestionCounter";
+import { Question } from "../../models/Question";
 
 export default function Form() {
   const { questions } = useQuestions();
   const [selectedAnswer, setSelectedAnswer] = useState(0);
-  const [answerState, setAnswerState] = useState<AnswerState>(
-    AnswerState.NOT_ANSWERED
-  );
+
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [message, setMessage] = useState("");
 
@@ -44,11 +44,11 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   async function checkAnswer(question: Question, answerIndex: number) {
     try {
       if (answerIndex === question.correctAnswerIndex) {
-        setAnswerState(AnswerState.CORRECT);
+        question.answerState = AnswerState.CORRECT;
         setMessage("¡Respuesta correcta!");
         await fetch("http://localhost:3000/correcto");
       } else {
-        setAnswerState(AnswerState.INCORRECT);
+        question.answerState = AnswerState.INCORRECT;
 
         setMessage("Respuesta incorrecta. Intenta de nuevo.");
         await fetch("http://localhost:3000/incorrecto");
@@ -58,7 +58,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
     } finally {
       setTimeout(() => {
         setMessage("");
-        setAnswerState(AnswerState.NOT_ANSWERED);
+        // setAnswerState(AnswerState.NOT_ANSWERED);
         // setCurrentQuestion((prev) => prev + 1);
         console.log("hola");
       }, 2000);
@@ -73,10 +73,10 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
     <section
       key={question.id}
       style={{
-        transform: `translateX(${(question.id - 1 - currentQuestion ) * 120}%)`,
+        transform: `translateX(${(question.id - 1 - currentQuestion) * 120}%)`,
         transition: "transform 0.3s ease-in-out",
       }}
-      className="flex flex-col absolute h-full"
+      className="flex flex-col absolute h-full w-[90%] mt-6"
     >
       <h2 className="text-2xl font-bold mb-4 text-center">{question.title}</h2>
       <p>{question.description}</p>
@@ -127,9 +127,9 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         Enviar respuesta
       </button>
 
-      <FeedBackMessage message={message} correct={answerState} />
+      <FeedBackMessage message={message} correct={question.answerState} />
 
-      <footer className="mt-auto mb-8 flex flex-row justify-evenly">
+      <footer className="mt-auto mb-20 flex flex-row justify-evenly">
         <button
           className="rounded-full border-gray-600 border-2 
           h-14 w-14 text-white relative
@@ -162,16 +162,23 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   return (
     <div
       id="gradient-wrapper"
-      className={`bg-gradient-to-tr rounded-lg p-1 w-full max-w-[30rem] ${
-        answerState == AnswerState.CORRECT && "from-green-400 to-blue-500"
+      className={`bg-gradient-to-tr rounded-lg p-1 w-full max-w-[36rem]
+        flex justify-center ${
+        questions[currentQuestion]?.answerState == AnswerState.CORRECT &&
+        "from-green-400 to-blue-500"
       }
-      ${answerState == AnswerState.INCORRECT && "from-red-500 to-orange-500"}
+      ${
+        questions[currentQuestion]?.answerState == AnswerState.INCORRECT &&
+        "from-red-500 to-orange-500"
+      }
       `}
     >
       <div
         className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md
-        relative overflow-hidden min-h-[40rem]"
+        relative overflow-hidden min-h-[40rem]
+        flex flex-col items-center"
       >
+        <QuestionCounter />
         {questions.length === 0 ? (
           <p className="text-white">Cargando...</p>
         ) : (
