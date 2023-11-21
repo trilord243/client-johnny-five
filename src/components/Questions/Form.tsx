@@ -18,6 +18,8 @@ export default function Form() {
 
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [message, setMessage] = useState("");
+  const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
+  const [isChecking, setIsChecking] = useState(false);
 
   const codeString = `
 function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, onMouseOver,}) {
@@ -31,17 +33,15 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   //   plugins: [parserBabel],
   // });
 
-  // const checkAnswer = () => {
-  //   if (selectedAnswer === "D") {
-  //     setMessage("¡Respuesta correcta!");
-  //     fetch("http://localhost:3000/correcto");
-  //   } else {
-  //     setMessage("Respuesta incorrecta. Intenta de nuevo.");
-  //     fetch("http://localhost:3000/incorrecto");
-  //   }
-  // };
-
   async function checkAnswer(question: Question, answerIndex: number) {
+    if (isChecking) return;
+    setIsChecking(true);
+
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+
     try {
       if (answerIndex === question.correctAnswerIndex) {
         question.answerState = AnswerState.CORRECT;
@@ -56,15 +56,37 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
     } catch (error) {
       console.log("error con la API", error);
     } finally {
-      setTimeout(() => {
-        setMessage("");
-        // setCurrentQuestion((prev) => prev + 1);
-      }, 2000);
+      if (timeoutId) {
+        clearTimeout(timeoutId);
+        setTimeoutId(null);
+      }
+
+      const timeout = setTimeout(() => {
+        if (!isChecking) {
+          setMessage("");
+          setSelectedAnswer(0);
+          if (currentQuestion < questions.length - 1)
+            setCurrentQuestion((prev) => prev + 1);
+        }
+      }, 1000);
+
+      setIsChecking(false);
+      setTimeoutId(timeout);
     }
   }
 
   function getAlphabetLetter(index: number) {
     return String.fromCharCode(97 + index);
+  }
+
+  function moveQuestion(index: number) {
+    if (isChecking) return;
+    if (timeoutId) {
+      clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
+
+    setCurrentQuestion((prev) => prev + index);
   }
 
   const questionsJSX = questions.map((question) => (
@@ -116,22 +138,23 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         ))}
       </fieldset>
 
-      <FeedBackMessage message={message} correct={question.answerState} />
       <button
+        disabled={isChecking}
         onClick={() => checkAnswer(question, selectedAnswer)}
         className="bg-blue-500 hover:bg-blue-700 text-white 
-          font-bold py-2 px-4 rounded 
+          font-bold py-2 px-4 rounded disabled:opacity-50
           max-w-[10rem] self-center mt-auto mb-8"
       >
         Enviar respuesta
       </button>
 
-      <footer className="\ mb-20 flex flex-row justify-evenly">
+      <footer className={`flex flex-row justify-evenly mb-20`}>
         <button
+          disabled={isChecking || currentQuestion === 0}
           className="rounded-full border-gray-600 border-2 
-          h-14 w-14 text-white relative
+          h-14 w-14 text-white relative disabled:opacity-50
           backdrop-blur-lg hover:bg-gray-600/50 active:scale-95 transition-all"
-          onClick={() => setCurrentQuestion((prev) => prev - 1)}
+          onClick={() => moveQuestion(-1)}
         >
           <img
             src={Arrow}
@@ -141,10 +164,11 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         </button>
 
         <button
+          disabled={isChecking || currentQuestion === questions.length - 1}
           className="rounded-full  border-gray-600 border-2 
-          h-14 w-14 text-white relative
+          h-14 w-14 text-white relative disabled:opacity-50
           backdrop-blur-lg hover:bg-gray-600/50 active:scale-95 transition-all"
-          onClick={() => setCurrentQuestion((prev) => prev + 1)}
+          onClick={() => moveQuestion(+1)}
         >
           <img
             src={Arrow}
@@ -157,9 +181,10 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
   ));
 
   return (
-    <div
-      id="gradient-wrapper"
-      className={`bg-gradient-to-tr rounded-lg p-1 w-full max-w-[36rem]
+    <>
+      <div
+        id="gradient-wrapper"
+        className={`bg-gradient-to-tr rounded-lg p-1 w-full max-w-[36rem]
         flex justify-center ${
           questions[currentQuestion]?.answerState == AnswerState.CORRECT &&
           "from-green-400 to-blue-500"
@@ -169,25 +194,30 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         "from-red-500 to-orange-500"
       }
       `}
-    >
-      <div
-        className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md
+      >
+        <FeedBackMessage
+          message={message}
+          correct={questions[currentQuestion]?.answerState}
+        />
+        <div
+          className="bg-gray-800 w-full max-w-xl p-6 rounded-lg shadow-md
         relative overflow-hidden min-h-[40rem]
         flex flex-col items-center"
-      >
-        <QuestionCounter
-          questions={questions}
-          questionSetter={(index: number) => {
-            setCurrentQuestion(index);
-            console.log("hola");
-          }}
-        />
-        {questions.length === 0 ? (
-          <p className="text-white">Cargando...</p>
-        ) : (
-          questionsJSX
-        )}
+        >
+          <QuestionCounter
+            questions={questions}
+            questionSetter={(index: number) => {
+              setCurrentQuestion(index);
+              console.log("hola");
+            }}
+          />
+          {questions.length === 0 ? (
+            <p className="text-white">Cargando...</p>
+          ) : (
+            questionsJSX
+          )}
+        </div>
       </div>
-    </div>
+    </>
   );
 }

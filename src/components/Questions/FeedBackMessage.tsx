@@ -12,7 +12,7 @@ export default function FeedBackMessage({ message, correct }: Props) {
   return (
     message && (
       <p
-        className={`mb-4 mt-auto text-center  font-bold text-xl
+        className={`absolute -translate-y-12 text-center  font-bold text-xl
       ${
         correct === AnswerState.CORRECT ? " text-green-500" : " text-red-500"
       } `}
