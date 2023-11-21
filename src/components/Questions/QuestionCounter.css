@@ -1,0 +1,35 @@
+.number {
+  @apply flex flex-row items-center justify-center w-8 h-8 bg-gray-200 rounded-full text-black relative;
+}
+
+.number:not(:first-child)::before {
+  content: "";
+  width: 1rem;
+  height: 3px;
+
+  left: -1rem;
+  @apply absolute block bg-gradient-to-tr;
+
+}
+.number-incorrect {
+  @apply from-red-500 to-orange-500;
+}
+
+.number-correct {
+  @apply from-green-500 to-blue-500;
+}
+
+.number-idle {
+  @apply from-gray-200 to-gray-400;
+}
+
+/* .number:not(:last-child)::after {
+  content: "";
+  display: block;
+  width: 1rem;
+  height: 5px;
+  background-color: blue;
+
+  position: absolute;
+
+} */
