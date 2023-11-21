@@ -98,7 +98,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
       }}
       className="flex flex-col absolute h-full w-[90%] mt-10"
     >
-      <h2 className="text-2xl font-bold mb-4 text-center">{question.title}</h2>
+      <h2 className="text-2xl font-bold mt-2 mb-4 text-center">{question.title}</h2>
       <p>{question.description}</p>
       {question.code && (
         <SyntaxHighlighter
