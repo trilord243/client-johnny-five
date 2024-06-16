@@ -1,13 +1,8 @@
-import { useState } from "react";
-
-import { format } from "prettier";
-// import parserBabel from "prettier/parser-babel";
-
+import { useState, useEffect } from "react";
 import SyntaxHighlighter from "react-syntax-highlighter/dist/esm/default-highlight";
 import { atomOneDark } from "react-syntax-highlighter/dist/esm/styles/hljs";
 import useQuestions from "../../hooks/useQuestions";
 import FeedBackMessage, { AnswerState } from "./FeedBackMessage";
-
 import Arrow from "../../assets/icons/arrow.svg";
 import QuestionCounter from "./QuestionCounter";
 import { Question } from "../../models/Question";
@@ -15,23 +10,27 @@ import { Question } from "../../models/Question";
 export default function Form() {
   const { questions } = useQuestions();
   const [selectedAnswer, setSelectedAnswer] = useState(0);
-
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [message, setMessage] = useState("");
   const [timeoutId, setTimeoutId] = useState<NodeJS.Timeout | null>(null);
   const [isChecking, setIsChecking] = useState(false);
+  const [correctCount, setCorrectCount] = useState(0);
+
+  useEffect(() => {
+    if (correctCount === 3) {
+      // Llamar a la API cuando se alcancen 3 respuestas correctas
+      fetch("http://localhost:3000/premio")
+        .then((response) => response.json())
+        .then((data) => console.log("API response:", data))
+        .catch((error) => console.error("Error calling API:", error));
+    }
+  }, [correctCount]);
 
   const codeString = `
 function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, onMouseOver,}) {
 
 }
 `;
-
-  // FIXME - Conseguir manera de formatear con prettier
-  // const formattedCodeString = format(codeString, {
-  //   parser: "babel",
-  //   plugins: [parserBabel],
-  // });
 
   async function checkAnswer(question: Question, answerIndex: number) {
     if (isChecking) return;
@@ -46,12 +45,10 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
       if (answerIndex === question.correctAnswerIndex) {
         question.answerState = AnswerState.CORRECT;
         setMessage("¡Respuesta correcta!");
-        await fetch("http://localhost:3000/correcto");
+        setCorrectCount((prevCount) => prevCount + 1);
       } else {
         question.answerState = AnswerState.INCORRECT;
-
         setMessage("Respuesta incorrecta. Intenta de nuevo.");
-        await fetch("http://localhost:3000/incorrecto");
       }
     } catch (error) {
       console.log("error con la API", error);
@@ -107,7 +104,6 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
             ...atomOneDark,
             hljs: {
               width: "100%",
-              // maxWidth: '23rem',
               background: "black",
               padding: "1rem",
               borderRadius: "0.25rem",
@@ -158,7 +154,7 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
         >
           <img
             src={Arrow}
-            alt="Siguiente pregunta"
+            alt="Pregunta anterior"
             className="h-8 rotate-180 absolute top-1/2 -translate-y-1/2 left-[0.5rem]"
           />
         </button>
@@ -208,7 +204,6 @@ function HelloWorld({greeting = "hello", greeted = '"World"', silent = false, on
             questions={questions}
             questionSetter={(index: number) => {
               setCurrentQuestion(index);
-              console.log("hola");
             }}
           />
           {questions.length === 0 ? (
